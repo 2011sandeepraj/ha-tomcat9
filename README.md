@@ -12,4 +12,12 @@ Highly Available Tomcat 9 Image
        -> Update your application build.yaml to use this image for hosting your java application 
        -> Update your application deployment.yaml to add the rbac authorizations and roles required to run the tomcat in a cluster and don't forget to add the service account required to run your container under the spec.
 
+## Build & Deploy: Tag Convention
+    We build in perrsi-tools. Per the Red Hat standard, we will use the time since the epoch as a tag suffix to the Tomcat version:
+        > oc process -f ./openshift/build.yaml -p TAG_SUFFIX=$(date +%s) -p SOURCE_GIT_REF=release/0.0.1 | oc create -n perrsi-tools -f -
+        Use oc replace instead of create after the first run
+    When tagging over to perrsi-prod, use the same tag; update -latest; update -stable if necessary.
+        > oc tag perrsi-tools/ha-tomcat9:9.0.27-1654321 perrsi-prod/ha-tomcat9:9.0.27-1654321 --reference-policy=local
+        > oc tag perrsi-tools/ha-tomcat9:9.0.27-1654321 perrsi-prod/ha-tomcat9:9.0.27-latest --reference-policy=source
+
 #### Note: To run with existing docker configuration, you will not be needed to make any changes to the docker folder
